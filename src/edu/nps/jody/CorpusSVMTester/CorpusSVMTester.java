@@ -318,6 +318,7 @@ public class CorpusSVMTester
 				scanner = new Yylex(new FileReader(sourceFile));
 				
 				//Set up svm file to be written to
+				new File(svmDirName).mkdir();
 				writeFile = new File(svmDirName + sourceFile.getName());
 				writeFile.createNewFile();
 				printWriter = new PrintWriter(writeFile);
@@ -401,6 +402,7 @@ public class CorpusSVMTester
 				scanner = new Yylex(new FileReader(sourceFile));
 				
 				//Set up svm file to be written to
+				new File(svmDirName).mkdir();
 				writeFile = new File(svmDirName + sourceFile.getName());
 				writeFile.createNewFile();
 				printWriter = new PrintWriter(writeFile);
