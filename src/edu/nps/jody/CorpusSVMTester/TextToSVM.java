@@ -35,7 +35,7 @@ import edu.nps.jody.HashFinder.MembershipChecker;
  * @author Jody Grady, CS Masters Student, Naval Postgraduate School
  *
  */
-public class CorpusSVMTester 
+public class TextToSVM 
 {
 	//Data Members
 	public static final String 	PATH_DELIM 			= System.getProperty("path.separator");
