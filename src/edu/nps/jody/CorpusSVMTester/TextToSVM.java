@@ -43,9 +43,17 @@ public class TextToSVM
 	public static final String KEY_NAME				= "keys.mph";
 	public static final String SIGNATURE_NAME	= "signature";
 	public static final String SVM_NAME				= "svmFiles";
+	private						int		maxMapValue;
 	
 	//Constructors
-
+	/**
+	 * Sole constructor for TextToSVM.  Sets maxMapValue = 0. If this class goes back to 
+	 * being all static methods, then this constructor will be empty. 
+	 */
+	TextToSVM()
+	{
+		maxMapValue = 0;
+	}
 	
 	//Methods
 	/**
@@ -75,7 +83,7 @@ public class TextToSVM
 	 * @param nameToIntegerMap hashMap of filename to id values
 	 * @return an int value of the id for the given filename
 	 */
-	/*public int getIntegerIdOfFilename(String filename, HashMap<String, Integer> nameToIntegerMap)
+	public int getIntegerIdOfFilename(String filename, HashMap<String, Integer> nameToIntegerMap)
 	{
 		if (nameToIntegerMap.containsKey(filename))
 		{
@@ -87,7 +95,7 @@ public class TextToSVM
 			nameToIntegerMap.put(filename, maxMapValue);
 			return maxMapValue;
 		}
-	}*/
+	}
 	
 	/**
 	 * Finds the id number (value) for a given filename (key) within the provided hashmap. 
@@ -101,7 +109,7 @@ public class TextToSVM
 	 * @param nameToIntegerMap hashMap of filename to id values
 	 * @return an int value of the id for the given filename
 	 */
-	public static  int getIntegerIdOfFilename(String filename, HashMap<String, Integer> nameToIntegerMap)
+	public static  int getIntegerIdOfFilenameStatic(String filename, HashMap<String, Integer> nameToIntegerMap)
 	{
 		if (nameToIntegerMap.containsKey(filename))
 		{
