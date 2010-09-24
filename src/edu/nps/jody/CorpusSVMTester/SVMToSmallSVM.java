@@ -44,8 +44,10 @@ import java.util.TreeSet;
 public class SVMToSmallSVM 
 {
 	//Data Members
-	HashMap<Integer, Integer> largeToSmallHashMap;
-	int 												mapMax;
+	public static final String 						PATH_DELIM 						= System.getProperty("path.separator");
+	private static final String 					SMALL_SVM_DIR_NAME 	= "smallSVMFiles";
+	private HashMap<Integer, Integer> largeToSmallHashMap;
+	private int 												mapMax;
 	
 	//Constructors
 	
@@ -88,7 +90,13 @@ public class SVMToSmallSVM
 		}
 	}
 	
-	public void processLargeSVMDirectory(String directoryName) throws FileNotFoundException
+	/**
+	 * 
+	 * @param directoryName
+	 * @throws FileNotFoundException
+	 * @throws IOException
+	 */
+	public void processLargeSVMDirectory(String directoryName) throws FileNotFoundException, IOException
 	{
 		File[] fileArray;
 		
@@ -106,7 +114,6 @@ public class SVMToSmallSVM
 		
 		for (int i=0; i < fileArray.length; i++)
 		{
-			System.out.println("Processing " + fileArray[i].getAbsolutePath());
 			processLargeSVMFile(fileArray[i]);
 		}
 	}
@@ -177,12 +184,15 @@ public class SVMToSmallSVM
 		return newLine;
 	}
 	
-	//FIXME make this directory dependent vice extension dependent
-	public void writeSmallSVMFile(File largeFile, BufferedReader largeBufferedReader) throws IOException
+	//FIXME need a writeSmallSVMFile preprocessor vice having two identical overloaded functions that just differ in handling smallFileName
+	public void writeSmallSVMFile(File largeFile, BufferedReader largeBufferedReader, String smallFileName) throws IOException
 	{
-		String smallFilename = largeFile.getAbsolutePath();
+		//String smallFilename = largeFile.getAbsolutePath();
+		//String parentDirectory = largeFile.getParentFile().getParent();
 		
-		File smallFile = new File(smallFilename + ".small");
+		//File smallFile = new File(parentDirectory + PATH_DELIM + SMALL_SVM_DIR_NAME + PATH_DELIM  + largeFile.getName());
+		File smallFile = new File(smallFileName);
+		String parentDirectory = smallFile.getParent();
 		
 		String oldLine;
 		String newLine = null;
@@ -200,9 +210,63 @@ public class SVMToSmallSVM
 			
 			smallPrintWriter.flush();
 		}
-		catch (FileNotFoundException f)
+		catch (IOException i)
+		{
+			//Most likely IOException is the director does not exists, this avoids a wasted grunch of IF statements
+			//File mkDirFile = new File(parentDirectory + PATH_DELIM + SMALL_SVM_DIR_NAME + PATH_DELIM);
+			File mkDirFile = new File(parentDirectory);
+			mkDirFile.mkdirs();//Notice this is mkdirS() not mkdir() like in other version of writeSmallSVMFile
+						
+			if (mkDirFile.isDirectory())
+			{
+				writeSmallSVMFile(largeFile, largeBufferedReader, smallFileName);
+			}
+			else
+			{
+				//Okay, directory was not the issue, throw the IOException now.
+				throw new IOException();
+			}
+		}
+	}
+	
+	public void writeSmallSVMFile(File largeFile, BufferedReader largeBufferedReader) throws IOException
+	{
+		//String smallFilename = largeFile.getAbsolutePath();
+		String parentDirectory = largeFile.getParentFile().getParent();
+		
+		File smallFile = new File(parentDirectory + PATH_DELIM + SMALL_SVM_DIR_NAME + PATH_DELIM  + largeFile.getName());
+		
+		String oldLine;
+		String newLine = null;
+		
+		try 
 		{
 			smallFile.createNewFile();
+			PrintWriter smallPrintWriter = new PrintWriter(smallFile);
+			
+			while ((oldLine = largeBufferedReader.readLine()) != null)
+			{
+				newLine = convert(oldLine);
+				smallPrintWriter.println(newLine);
+			}
+			
+			smallPrintWriter.flush();
+		}
+		catch (IOException i)
+		{
+			//Most likely IOException is the director does not exists, this avoids a wasted grunch of IF statements
+			File mkDirFile = new File(parentDirectory + PATH_DELIM + SMALL_SVM_DIR_NAME + PATH_DELIM);
+			mkDirFile.mkdir();
+			
+			if (mkDirFile.isDirectory())
+			{
+				writeSmallSVMFile(largeFile, largeBufferedReader);
+			}
+			else
+			{
+				//Okay, directory was not the issue, throw the IOException now.
+				throw new IOException();
+			}
 		}
 
 	}

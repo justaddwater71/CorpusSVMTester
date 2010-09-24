@@ -37,7 +37,7 @@ public class FeatureMaker
 	public static final int ORTHOGONAL_SPARSE_BIGRAM 	= 8;
 	public static final int ONE_GRAM_DISTANCE					= 1;
 	public static final int TWO_GRAM_DISTANCE					= 2;
-	public static final int THREE_GRAM_DISTANCE					= 3;
+	public static final int THREE_GRAM_DISTANCE				= 3;
 	public static final int FOUR_GRAM_DISTANCE					= 4;
 	public static final int FIVE_GRAM_DISTANCE					= 5;
 	
