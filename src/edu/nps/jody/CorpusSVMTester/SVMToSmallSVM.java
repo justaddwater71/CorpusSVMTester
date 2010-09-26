@@ -47,7 +47,7 @@ public class SVMToSmallSVM
 	public static final String 						PATH_DELIM 						= System.getProperty("path.separator");
 	public static final String						PAIRS_DELIM						=" ";//TODO make this selectable in the constructur, but still final
 	public static final char						FEATURE_COUNT_DELIM = ':';//TODO make this selectable in the constructor, but still final
-	private static final String 					SMALL_SVM_DIR_NAME 	= "smallSVMFiles";
+	public static final String 						SMALL_SVM_DIR_NAME 	= "smallSVMFiles";
 	private HashMap<Integer, Integer> largeToSmallHashMap;
 	private int 												mapMax;
 	
@@ -156,9 +156,23 @@ public class SVMToSmallSVM
 	 */
 	public void processLargeSVMDirectory(String directoryName) throws FileNotFoundException, IOException
 	{
-		File[] fileArray;
-		
 		File directory = new File(directoryName);
+		
+		processLargeSVMDirectory(directory);
+	}
+	
+	/**
+	 * This is thetop level entry point to transform a libSVM sparse format file comprised of minimum perfect hash values
+	 * that range too large for libSVM or libLinear to handle into a libSVM sparse format file comprised of sequentially 
+	 * encountered values that libSVM and libLinear can handle.  This version IS NOT recursive.  
+	 * 
+	 * @param directory directory containing  libSVM formatted file containing minimum perfect hash values too large for libLinear to handle
+	 * @throws FileNotFoundException If the largeSVMFile is not found, then throw exception
+	 * @throws IOException If an IO error other than FileNotFound is encountered, throw exception.  This is most likely a permissions or directory issue.
+	 */
+	public void processLargeSVMDirectory(File directory) throws FileNotFoundException, IOException
+	{
+		File[] fileArray;
 		
 		if (directory.isDirectory())
 		{

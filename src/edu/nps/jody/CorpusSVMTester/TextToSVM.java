@@ -38,6 +38,15 @@ import edu.nps.jody.HashFinder.MembershipChecker;
 public class TextToSVM 
 {
 	//Data Members
+	public static final int ONE_GRAM										= FeatureMaker.ONE_GRAM;
+	public static final int TWO_GRAM										= FeatureMaker.TWO_GRAM;
+	public static final int THREE_GRAM									= FeatureMaker.THREE_GRAM;
+	public static final int FOUR_GRAM									= FeatureMaker.FOUR_GRAM;
+	public static final int FIVE_GRAM										= FeatureMaker.FIVE_GRAM;
+	public static final int GAPPY_BIGRAM								= FeatureMaker.GAPPY_BIGRAM;
+	public static final int GAPPY_BIGRAM_TAGGED 				= FeatureMaker.GAPPY_BIGRAM_TAGGED;
+	public static final int ORTHOGONAL_SPARSE_BIGRAM 	= FeatureMaker.ORTHOGONAL_SPARSE_BIGRAM;
+	
 	public static final String 	PATH_DELIM 			= System.getProperty("path.separator");
 	public static final String CMPH_DIR				= "cmph";
 	public static final String KEY_NAME				= "keys.mph";
@@ -59,7 +68,7 @@ public class TextToSVM
 	/**
 	 * Find the maximum Integer value within nameToIntegerMap
 	 * 
-	 * @param nameToIntegerMap the set of strings and their counts/ids
+	 * @param nameToIntegerMap - the set of strings and their counts/ids
 	 * @return the highest value Integer in the value portion of nameToIntegerMap
 	 */
 	public static  Integer getMaxMapValue(HashMap<String, Integer> nameToIntegerMap)
@@ -79,8 +88,8 @@ public class TextToSVM
 	 * If the filename (key) is not found, then that filename is entered into the map along 
 	 * with the next highest value within the map as the new filename's id
 	 * 
-	 * @param filename names of the file being checked for an id
-	 * @param nameToIntegerMap hashMap of filename to id values
+	 * @param filename - names of the file being checked for an id
+	 * @param nameToIntegerMap - hashMap of filename to id values
 	 * @return an int value of the id for the given filename
 	 */
 	public int getIntegerIdOfFilename(String filename, HashMap<String, Integer> nameToIntegerMap)
