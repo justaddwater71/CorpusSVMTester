@@ -7,7 +7,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import edu.nps.LibLinearManager.LibLinearManager;
 import edu.nps.jody.GroupAndSlice.GroupAndSlice;
+import edu.nps.jody.GroupAndSlice.GroupTypes;
 import edu.nps.jody.MergeAndAnalyze.MergeAndAnalyze;
 
 /**
@@ -17,21 +19,19 @@ import edu.nps.jody.MergeAndAnalyze.MergeAndAnalyze;
 public class CorpusSVMTester 
 {
 	//Data Members
-	
+	public static final String PATH_DELIM = System.getProperty("path.separator");
 	
 	//Constructors
 	
 	
 	//Methods
-	public void prepareTextForSVM(File textDirectory, int maxGap, int groupType, int[] groupSizes, int titleDigits, int nCrossValidation) throws FileNotFoundException, IOException
+	public static void prepareTextForSVM(File parentDirectory, int maxGap, int groupType, int[] groupSizes, int titleDigits, int nCrossValidation) throws FileNotFoundException, IOException
 	{
-		File parentDirectory = textDirectory.getParentFile();
-		
 		TextToSVM textToSVM = new TextToSVM();
 		
-		textToSVM.processFiles(textDirectory, maxGap, TextToSVM.ORTHOGONAL_SPARSE_BIGRAM);
+		textToSVM.processFiles(parentDirectory, maxGap, TextToSVM.ORTHOGONAL_SPARSE_BIGRAM);
 		
-		File largeSVMDirectory = new File(parentDirectory, TextToSVM.SVM_NAME);
+		File largeSVMDirectory = new File(parentDirectory, TextToSVM.SVM_DIR_NAME);
 		
 		SVMToSmallSVM svmToSmallSVM = new SVMToSmallSVM();
 		
@@ -39,20 +39,20 @@ public class CorpusSVMTester
 		
 		File smallSVMDirectory = new File(parentDirectory, SVMToSmallSVM.SMALL_SVM_DIR_NAME);
 		
-		for (int i = 0; i < groupSizes.length; i++)
-		{
-			GroupAndSlice.groupAndSlicePrep(smallSVMDirectory, groupType, groupSizes[i], titleDigits, nCrossValidation);
-			//Put magical SVM management tool here...
-			MergeAndAnalyze.makeMergeAndAnalysisFiles(parentDirectory);
-		}
+		File sliceDirectory;
 		
-		//Put magical SVM management tool here...
-		
-		
-		
+		for (GroupTypes g: GroupTypes.values())
+			for (int i = 0; i < groupSizes.length; i++)
+			{
+				//TODO change groupType from int to Enum as an experiment...
+				GroupAndSlice.groupAndSlicePrep(smallSVMDirectory, groupType, groupSizes[i], titleDigits, nCrossValidation);
+				sliceDirectory = new File(smallSVMDirectory, g + PATH_DELIM + nCrossValidation);
+				LibLinearManager.dummyPredictDirectory(sliceDirectory);//This directory is not correct
+				MergeAndAnalyze.makeMergeAndAnalysisFiles(sliceDirectory);//This directory is not correct
+			}
 	}
 	
-	
+
 	
 	/**
 	 * @param args

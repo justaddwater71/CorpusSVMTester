@@ -47,11 +47,13 @@ public class TextToSVM
 	public static final int GAPPY_BIGRAM_TAGGED 				= FeatureMaker.GAPPY_BIGRAM_TAGGED;
 	public static final int ORTHOGONAL_SPARSE_BIGRAM 	= FeatureMaker.ORTHOGONAL_SPARSE_BIGRAM;
 	
-	public static final String 	PATH_DELIM 			= System.getProperty("path.separator");
-	public static final String CMPH_DIR				= "cmph";
-	public static final String KEY_NAME				= "keys.mph";
-	public static final String SIGNATURE_NAME	= "signature";
-	public static final String SVM_NAME				= "svmFiles";
+	public static final String 	PATH_DELIM 						= System.getProperty("path.separator");
+	public static final String PAIR_DELIM							= ":";
+	public static final String CMPH_DIR_NAME				= "cmph";
+	public static final String KEY_FILE_NAME					= "keys.mph";
+	public static final String SIGNATURE_FILE_NAME	= "signature";
+	public static final String SVM_DIR_NAME					= "svmFiles";
+	private static final String TEXT_DIR_NAME 				= "text";
 	private						int		maxMapValue;
 	
 	//Constructors
@@ -282,83 +284,18 @@ public class TextToSVM
 	 * subdirectories will be ignored.  This function requires that if a directory is given, then a sibling directory named "cmph" exists or
 	 * if a file is given, then a sibling to that files parent directory exists name "cmph".  The "cmph" directory contains a file named "keys.mph"
 	 * and a file named "signature" that are used to build a MembershipChecker for this processing.
-	 * 
-	 * @param fileArray
-	 * @param maxGap
-	 * @param nameToIntegerMap
-	 * @param featureType
-	 * @param membershipChecker
-	 * @throws IOException
 	 */
-	public void processFiles(File file, int maxGap,  int featureType) throws FileNotFoundException, IOException
+	public void processFiles(File parentDirectory, int maxGap,  int featureType) throws FileNotFoundException, IOException
 	{
-		Yylex scanner;
-		Vector<String> vectorString;
-		Vector<String> instanceVector;
-		HashMap<String, Integer>nameToIntegerMap = new HashMap<String, Integer>();
-		MembershipChecker membershipChecker;
-		HashMap<Integer, Integer> chdMap;
-		PrintWriter printWriter;
-		File[] fileArray;
-		File sourceFile;
-		File writeFile;
-		String keyFileName;
-		String signatureFileName;
-		String parentFileName;
-		String svmDirName;
-		int id;
+		File textDir				= new File(parentDirectory.getParentFile(), TEXT_DIR_NAME);
+		File cmphDir			= new File(parentDirectory, 	CMPH_DIR_NAME);
+		File keyFile				= new File(cmphDir, 				KEY_FILE_NAME);
+		File signatureFile	= new File(cmphDir, 				SIGNATURE_FILE_NAME);
+		File svmDir				= new File(parentDirectory,	SVM_DIR_NAME);
 		
-		if (file.isDirectory())
-		{
-			fileArray = file.listFiles();
-			parentFileName = file.getParent();
-		}
-		else
-		{
-			fileArray = new File[1];
-			fileArray[0] = file;
-			parentFileName = file.getParentFile().getParent();
-		}
-		
-		keyFileName 			= parentFileName + PATH_DELIM + CMPH_DIR + PATH_DELIM + KEY_NAME;
-		signatureFileName 	= parentFileName + PATH_DELIM + CMPH_DIR + PATH_DELIM + SIGNATURE_NAME;
-		svmDirName				= parentFileName + PATH_DELIM + SVM_NAME + PATH_DELIM;
-		
-		membershipChecker = new MembershipChecker(keyFileName, signatureFileName);
-		
-		for (int i=0;i < fileArray.length;i++)
-		{
-			if (fileArray[i].isFile())
-			{
-				//Get the source file
-				sourceFile = fileArray[i];
-				scanner = new Yylex(new FileReader(sourceFile));
-				
-				//Set up svm file to be written to
-				new File(svmDirName).mkdir();
-				writeFile = new File(svmDirName + sourceFile.getName());
-				writeFile.createNewFile();
-				printWriter = new PrintWriter(writeFile);
-				
-				//Get Integer ID of file
-				id = getIntegerIdOfFilename(sourceFile.getName(), nameToIntegerMap);
-				
-				while((vectorString = getPhraseFromLex(scanner)) != null)
-				{
-					if (!vectorString.isEmpty())
-					{
-						instanceVector =FeatureMaker.parse(vectorString, maxGap, featureType);
-						chdMap = turnInstanceIntoCHDMap(instanceVector, membershipChecker);
-						writeCHDMapToSVMFile(chdMap, printWriter, id);
-						printWriter.flush();
-					}
-				}
-				
-				printWriter.flush();
-				printWriter.close();
-			}
-		}
+		processFiles(textDir, maxGap, featureType, keyFile.getAbsolutePath(), signatureFile.getAbsolutePath(), svmDir);
 	}
+		
 	
 	/**
 	 * Turns all files in a given directory or a single file into a corresponding libSVM SPARSE formatted file madu up of hash value for tokens
@@ -374,7 +311,15 @@ public class TextToSVM
 	 * @param membershipChecker
 	 * @throws IOException
 	 */
-	public void processFiles(File file, int maxGap,  int featureType, String keyFileName, String signatureFileName, String svmDirName) throws FileNotFoundException, IOException
+	public void processFiles(String textDirName, int maxGap,  int featureType, String keyFileName, String signatureFileName, String svmDirName) throws FileNotFoundException, IOException
+	{
+		File textDir = new File(textDirName);
+		File svmDir = new File(svmDirName);
+		
+		processFiles(textDir, maxGap, featureType, keyFileName, signatureFileName, svmDir);
+	}
+	
+	public void processFiles(File textDirectory, int maxGap,  int featureType, String keyFileName, String signatureFileName, File svmDir) throws FileNotFoundException, IOException
 	{
 		Yylex scanner;
 		Vector<String> vectorString;
@@ -386,27 +331,20 @@ public class TextToSVM
 		File[] fileArray;
 		File sourceFile;
 		File writeFile;
-		//String keyFileName;
-		//String signatureFileName;
-		//String parentFileName;
-		//String svmDirName;
+
 		int id;
 		
-		if (file.isDirectory())
+		if (textDirectory.isDirectory())
 		{
-			fileArray = file.listFiles();
+			fileArray = textDirectory.listFiles();
 			//parentFileName = file.getParent();
 		}
 		else
 		{
 			fileArray = new File[1];
-			fileArray[0] = file;
+			fileArray[0] = textDirectory;
 			//parentFileName = file.getParentFile().getParent();
 		}
-		
-/*		keyFileName 			= parentFileName + PATH_DELIM + CMPH_DIR + PATH_DELIM + KEY_NAME;
-		signatureFileName 	= parentFileName + PATH_DELIM + CMPH_DIR + PATH_DELIM + SIGNATURE_NAME;
-		svmDirName				= parentFileName + PATH_DELIM + SVM_NAME + PATH_DELIM;*/
 		
 		membershipChecker = new MembershipChecker(keyFileName, signatureFileName);
 		
@@ -418,10 +356,18 @@ public class TextToSVM
 				sourceFile = fileArray[i];
 				scanner = new Yylex(new FileReader(sourceFile));
 				
-				//Set up svm file to be written to
-				new File(svmDirName).mkdir();
-				writeFile = new File(svmDirName + sourceFile.getName());
-				writeFile.createNewFile();
+				//Set up svm file to be written to, if path to writeFile does not exist, create it, but only once
+				try
+				{
+					writeFile = new File(svmDir, sourceFile.getName());
+					writeFile.createNewFile();
+				}
+				catch(IOException e)
+				{
+					svmDir.mkdirs();
+					writeFile = new File(svmDir, sourceFile.getName());
+					writeFile.createNewFile();
+				}
 				printWriter = new PrintWriter(writeFile);
 				
 				//Get Integer ID of file

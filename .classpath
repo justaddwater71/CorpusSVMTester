@@ -5,5 +5,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/CMPH"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/GroupAndSlice"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/MergeAndAnalyze"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/liblinear-java"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/LibLinearManager"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
