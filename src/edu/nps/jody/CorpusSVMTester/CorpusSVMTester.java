@@ -25,11 +25,11 @@ public class CorpusSVMTester
 	
 	
 	//Methods
-	public static void prepareTextForSVM(File parentDirectory, int maxGap, int groupType, int[] groupSizes, int titleDigits, int nCrossValidation) throws FileNotFoundException, IOException
+	public static void prepareTextForSVM(File parentDirectory, int maxGap,  FeatureTypes featureType, int[] groupSizes, int titleDigits, int nCrossValidation) throws FileNotFoundException, IOException
 	{
 		TextToSVM textToSVM = new TextToSVM();
 		
-		textToSVM.processFiles(parentDirectory, maxGap, TextToSVM.ORTHOGONAL_SPARSE_BIGRAM);
+		textToSVM.processFiles(parentDirectory, maxGap, featureType);
 		
 		File largeSVMDirectory = new File(parentDirectory, TextToSVM.SVM_DIR_NAME);
 		
@@ -41,12 +41,12 @@ public class CorpusSVMTester
 		
 		File sliceDirectory;
 		
-		for (GroupTypes g: GroupTypes.values())
+		for (GroupTypes groupType:GroupTypes.values())
 			for (int i = 0; i < groupSizes.length; i++)
 			{
-				//TODO change groupType from int to Enum as an experiment...
+				//REMINDER !!!!!!This is NOT the way we'd chain this for a qsub job!!!!!
 				GroupAndSlice.groupAndSlicePrep(smallSVMDirectory, groupType, groupSizes[i], titleDigits, nCrossValidation);
-				sliceDirectory = new File(smallSVMDirectory, g + PATH_DELIM + nCrossValidation);
+				sliceDirectory = new File(smallSVMDirectory, groupType + PATH_DELIM + nCrossValidation);
 				LibLinearManager.dummyPredictDirectory(sliceDirectory);//This directory is not correct
 				MergeAndAnalyze.makeMergeAndAnalysisFiles(sliceDirectory);//This directory is not correct
 			}
