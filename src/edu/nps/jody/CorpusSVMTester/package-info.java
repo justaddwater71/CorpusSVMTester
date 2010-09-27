@@ -1,3 +1,5 @@
+package edu.nps.jody.CorpusSVMTester;
+
 /**
  * This package is a collection of classes used to process a directory of text files,
  * where each file represents an author, topic, or some other classification,
