@@ -27,7 +27,7 @@ import java.util.Vector;
 public class FeatureMaker 
 {
 	//Data Members
-	public static final int ONE_GRAM										= 1;
+/*	public static final int ONE_GRAM										= 1;
 	public static final int TWO_GRAM										= 2;
 	public static final int THREE_GRAM									= 3;
 	public static final int FOUR_GRAM									= 4;
@@ -39,7 +39,7 @@ public class FeatureMaker
 	public static final int TWO_GRAM_DISTANCE					= 2;
 	public static final int THREE_GRAM_DISTANCE				= 3;
 	public static final int FOUR_GRAM_DISTANCE					= 4;
-	public static final int FIVE_GRAM_DISTANCE					= 5;
+	public static final int FIVE_GRAM_DISTANCE					= 5;*/
 	
 	//Constructors
 	
@@ -57,34 +57,34 @@ public class FeatureMaker
 	 * @param featureType type of feature to create (ie unigram, bigram, gappy bigram, orthogonal sparse bigram, etc)
 	 * @return Vector of feature instances made up of unigrams, bigrams, gappy bigrams, etc.)
 	 */
-	public static Vector<String> parse(Vector<String> tokenizedText, int maxGap, int featureType)
+	public static Vector<String> parse(Vector<String> tokenizedText, int maxGap, FeatureTypes featureType)
 	{
 		Vector<String> featureVector = null;
 		switch (featureType)
 		{
 		case ONE_GRAM:
 		{
-			featureVector = parseNGram(tokenizedText, ONE_GRAM_DISTANCE);
+			featureVector = parseNGram(tokenizedText, featureType.distance());
 			break;
 		}
 		case TWO_GRAM:
 		{
-			featureVector = parseNGram(tokenizedText, TWO_GRAM_DISTANCE);
+			featureVector = parseNGram(tokenizedText, featureType.distance());
 			break;
 		}
 		case THREE_GRAM:
 		{
-			featureVector = parseNGram(tokenizedText, THREE_GRAM_DISTANCE);
+			featureVector = parseNGram(tokenizedText, featureType.distance());
 			break;
 		}
 		case FOUR_GRAM:
 		{
-			featureVector = parseNGram(tokenizedText, FOUR_GRAM_DISTANCE);
+			featureVector = parseNGram(tokenizedText, featureType.distance());
 			break;
 		}
 		case FIVE_GRAM:
 		{
-			featureVector = parseNGram(tokenizedText, FIVE_GRAM_DISTANCE);
+			featureVector = parseNGram(tokenizedText, featureType.distance());
 			break;
 		}
 		case GAPPY_BIGRAM:

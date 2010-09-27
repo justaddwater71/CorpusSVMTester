@@ -38,14 +38,14 @@ import edu.nps.jody.HashFinder.MembershipChecker;
 public class TextToSVM 
 {
 	//Data Members
-	public static final int ONE_GRAM										= FeatureMaker.ONE_GRAM;
+/*	public static final int ONE_GRAM										= FeatureMaker.ONE_GRAM;
 	public static final int TWO_GRAM										= FeatureMaker.TWO_GRAM;
 	public static final int THREE_GRAM									= FeatureMaker.THREE_GRAM;
 	public static final int FOUR_GRAM									= FeatureMaker.FOUR_GRAM;
 	public static final int FIVE_GRAM										= FeatureMaker.FIVE_GRAM;
 	public static final int GAPPY_BIGRAM								= FeatureMaker.GAPPY_BIGRAM;
 	public static final int GAPPY_BIGRAM_TAGGED 				= FeatureMaker.GAPPY_BIGRAM_TAGGED;
-	public static final int ORTHOGONAL_SPARSE_BIGRAM 	= FeatureMaker.ORTHOGONAL_SPARSE_BIGRAM;
+	public static final int ORTHOGONAL_SPARSE_BIGRAM 	= FeatureMaker.ORTHOGONAL_SPARSE_BIGRAM;*/
 	
 	public static final String 	PATH_DELIM 						= System.getProperty("path.separator");
 	public static final String PAIR_DELIM							= ":";
@@ -285,7 +285,7 @@ public class TextToSVM
 	 * if a file is given, then a sibling to that files parent directory exists name "cmph".  The "cmph" directory contains a file named "keys.mph"
 	 * and a file named "signature" that are used to build a MembershipChecker for this processing.
 	 */
-	public void processFiles(File parentDirectory, int maxGap,  int featureType) throws FileNotFoundException, IOException
+	public void processFiles(File parentDirectory, int maxGap,  FeatureTypes featureType) throws FileNotFoundException, IOException
 	{
 		File textDir				= new File(parentDirectory.getParentFile(), TEXT_DIR_NAME);
 		File cmphDir			= new File(parentDirectory, 	CMPH_DIR_NAME);
@@ -311,7 +311,7 @@ public class TextToSVM
 	 * @param membershipChecker
 	 * @throws IOException
 	 */
-	public void processFiles(String textDirName, int maxGap,  int featureType, String keyFileName, String signatureFileName, String svmDirName) throws FileNotFoundException, IOException
+	public void processFiles(String textDirName, int maxGap,  FeatureTypes featureType, String keyFileName, String signatureFileName, String svmDirName) throws FileNotFoundException, IOException
 	{
 		File textDir = new File(textDirName);
 		File svmDir = new File(svmDirName);
@@ -319,7 +319,7 @@ public class TextToSVM
 		processFiles(textDir, maxGap, featureType, keyFileName, signatureFileName, svmDir);
 	}
 	
-	public void processFiles(File textDirectory, int maxGap,  int featureType, String keyFileName, String signatureFileName, File svmDir) throws FileNotFoundException, IOException
+	public void processFiles(File textDirectory, int maxGap, FeatureTypes featureType, String keyFileName, String signatureFileName, File svmDir) throws FileNotFoundException, IOException
 	{
 		Yylex scanner;
 		Vector<String> vectorString;
