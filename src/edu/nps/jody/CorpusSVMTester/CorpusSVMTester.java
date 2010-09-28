@@ -27,9 +27,9 @@ public class CorpusSVMTester
 	//Methods
 	public static void prepareTextForSVM(File parentDirectory, int maxGap,  FeatureTypes featureType, int[] groupSizes, int titleDigits, int nCrossValidation) throws FileNotFoundException, IOException
 	{
-		TextToSVM textToSVM = new TextToSVM();
+		//TextToSVM textToSVM = new TextToSVM();
 		
-		textToSVM.processFiles(parentDirectory, maxGap, featureType);
+		//textToSVM.processFiles(parentDirectory, maxGap, featureType);
 		
 		File largeSVMDirectory = new File(parentDirectory, TextToSVM.SVM_DIR_NAME);
 		
@@ -121,11 +121,9 @@ public class CorpusSVMTester
 			{
 				nCrossValidation = Integer.parseInt(args[i+1]);
 				i++;
-			}
-			
-			prepareTextForSVM(parentDirectory, maxGap, featureType, groupSizes, titleDigits, nCrossValidation);
+			}			
 		}
-
+		prepareTextForSVM(parentDirectory, maxGap, featureType, groupSizes, titleDigits, nCrossValidation);
 	}
 
 }

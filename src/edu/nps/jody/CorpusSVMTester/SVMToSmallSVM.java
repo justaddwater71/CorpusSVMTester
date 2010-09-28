@@ -67,6 +67,11 @@ public class SVMToSmallSVM
 		initlializeLargeToSmallHashMap(hashMapFileName);
 	}
 	
+	SVMToSmallSVM(File hashMapFile) throws IOException, ClassNotFoundException
+	{
+		initlializeLargeToSmallHashMap(hashMapFile);
+	}
+	
 	/**
 	 * Constructor used when no save object file containing a HashMap is expected.
 	 */
@@ -89,10 +94,30 @@ public class SVMToSmallSVM
 	 * @throws ClassNotFoundException if the file does not contain a valid 
 	 * HashMap<Integer, Integer> class, then stop the process
 	 */
-	@SuppressWarnings("unchecked")
+	
 	public void initlializeLargeToSmallHashMap(String filename) throws IOException, ClassNotFoundException
 	{
 		File largeToSmallHashMapFile = new File(filename);
+		
+		 initlializeLargeToSmallHashMap(largeToSmallHashMapFile);
+	}
+	
+	/**
+	 * Creates a hash map of Integer keys made up of minimum perfect hash values
+	 * and Integer values made up of sequential numbers that attempt to shrink down
+	 * the search space to a size that libLinear can handle.
+	 * 
+	 * @param filename file containing serialized hash map
+	 * @throws FileNotFoundException if there is no hash map file, make a new hash map
+	 * @throws IOException if permissions or path issues interfere with getting file, then 
+	 * stop the process
+	 * @throws ClassNotFoundException if the file does not contain a valid 
+	 * HashMap<Integer, Integer> class, then stop the process
+	 */
+	@SuppressWarnings("unchecked")
+	public void initlializeLargeToSmallHashMap(File largeToSmallHashMapFile) throws IOException, ClassNotFoundException
+	{
+		//File largeToSmallHashMapFile = new File(filename);
 		
 		try
 		{
@@ -125,9 +150,23 @@ public class SVMToSmallSVM
 	 */
 	public void processLargeSVMDirectoryRecursive(String directoryName) throws FileNotFoundException, IOException
 	{
-		File[] fileArray;
-		
 		File directory = new File(directoryName);
+		
+		processLargeSVMDirectoryRecursive(directory);
+	}
+	
+	/**
+	 * This is thetop level entry point to transform a libSVM sparse format file comprised of minimum perfect hash values
+	 * that range too large for libSVM or libLinear to handle into a libSVM sparse format file comprised of sequentially 
+	 * encountered values that libSVM and libLinear can handle.  This version IS recursive.  
+	 * 
+	 * @param directoryNamedirecotry containing  libSVM formatted file containing minimum perfect hash values too large for libLinear to handle
+	 * @throws FileNotFoundException If the largeSVMFile is not found, then throw exception
+	 * @throws IOException If an IO error other than FileNotFound is encountered, throw exception.  This is most likely a permissions or directory issue.
+	 */
+	public void processLargeSVMDirectoryRecursive(File directory) throws FileNotFoundException, IOException
+	{
+		File[] fileArray;
 		
 		if (directory.isDirectory())
 		{
@@ -201,11 +240,9 @@ public class SVMToSmallSVM
 	 * @throws FileNotFoundException If the largeSVMFile is not found, then throw exception
 	 * @throws IOException If an IO error other than FileNotFound is encountered, throw exception.  This is most likely a permissions or directory issue.
 	 */
-	public void processLargeSVMDirectory(String directoryName, String smallDirName) throws FileNotFoundException, IOException
+	public void processLargeSVMDirectory(File directory, File smallDir) throws FileNotFoundException, IOException
 	{
 		File[] fileArray;
-		
-		File directory = new File(directoryName);
 		
 		if (directory.isDirectory())
 		{
@@ -219,8 +256,28 @@ public class SVMToSmallSVM
 		
 		for (int i=0; i < fileArray.length; i++)
 		{
-			processLargeSVMFile(fileArray[i], smallDirName);
+			processLargeSVMFile(fileArray[i], smallDir);
 		}
+	}
+	
+	/**
+	 * This is thetop level entry point to transform a libSVM sparse format file comprised of minimum perfect hash values
+	 * that range too large for libSVM or libLinear to handle into a libSVM sparse format file comprised of sequentially 
+	 * encountered values that libSVM and libLinear can handle.  This version IS NOT recursive.  This version allows
+	 * the destination directory of the small SVM files to be designated.  The destination directory is created if it does
+	 * not already exist.
+	 * 
+	 * @param directoryNamedirecotry containing  libSVM formatted file containing minimum perfect hash values too large for libLinear to handle
+	 * @throws FileNotFoundException If the largeSVMFile is not found, then throw exception
+	 * @throws IOException If an IO error other than FileNotFound is encountered, throw exception.  This is most likely a permissions or directory issue.
+	 */
+	public void processLargeSVMDirectory(String directoryName, String smallDirName) throws FileNotFoundException, IOException
+	{
+		File directory = new File(directoryName);
+		
+		File smallDir = new File(smallDirName);
+		
+		processLargeSVMDirectory(directory, smallDir);
 	}
 	
 	/**
@@ -316,47 +373,36 @@ public class SVMToSmallSVM
 	 * @param smallDirName path and filename to directory where small SVM files will be written
 	 * @throws IOException if directory existence is not the issue with writing or reading a file, then IOException is thrown
 	 */
-	public void writeSmallSVMFile(File largeFile,  String smallDirName) throws IOException
+	public void writeSmallSVMFile(File largeFile,  File smallDir) throws IOException
 	{
-		File smallFile = new File(smallDirName + PATH_DELIM + largeFile.getName());
+		File smallFile = new File(smallDir, largeFile.getName());
 		BufferedReader largeBufferedReader = null;
+		PrintWriter smallPrintWriter;
 		
 		String oldLine;
 		String newLine = null;
 		
+		largeBufferedReader = new BufferedReader( new FileReader(largeFile));
+		
 		try 
 		{
-			largeBufferedReader = new BufferedReader( new FileReader(largeFile));
 			smallFile.createNewFile();
-			PrintWriter smallPrintWriter = new PrintWriter(smallFile);
-			
-			while ((oldLine = largeBufferedReader.readLine()) != null)
-			{
-				newLine = convert(oldLine);
-				smallPrintWriter.println(newLine);
-			}
-			
-			smallPrintWriter.flush();
 		}
 		catch (IOException i)
 		{
-			//Most likely IOException is the director does not exists, this avoids a wasted grunch of IF statements
-			//File mkDirFile = new File(parentDirectory + PATH_DELIM + SMALL_SVM_DIR_NAME + PATH_DELIM);
-			File mkDirFile = new File(smallDirName);
-			mkDirFile.mkdirs();
-						
-			if (mkDirFile.isDirectory())
-			{
-				//Close bufferedreader to avoid conflicts on the file (unlikely, but....)
-				largeBufferedReader.close();
-				writeSmallSVMFile(largeFile, smallFile.getName());
-			}
-			else
-			{
-				//Okay, directory was not the issue, throw the IOException now.
-				throw new IOException();
-			}
+			smallDir.mkdirs();
+			smallFile.createNewFile();
 		}
+		
+		smallPrintWriter = new PrintWriter(smallFile);
+		
+		while ((oldLine = largeBufferedReader.readLine()) != null)
+		{
+			newLine = convert(oldLine);
+			smallPrintWriter.println(newLine);
+		}
+		
+		smallPrintWriter.flush();
 	}
 	
 	/**
@@ -374,49 +420,11 @@ public class SVMToSmallSVM
 	{
 		String parentDirectory = largeFile.getParentFile().getParent();
 		
-		String smallDirName = parentDirectory + PATH_DELIM + SMALL_SVM_DIR_NAME + PATH_DELIM  + largeFile.getName();
+		File smallFile = new File(parentDirectory,  SMALL_SVM_DIR_NAME + PATH_DELIM + largeFile.getName());
 		
-		File smallFile = new File(smallDirName + PATH_DELIM  + largeFile.getName());
-		
-		BufferedReader largeBufferedReader = null;
-		
-		String oldLine;
-		String newLine = null;
-		
-		try 
-		{
-			largeBufferedReader = new BufferedReader( new FileReader(largeFile));
-			smallFile.createNewFile();
-			PrintWriter smallPrintWriter = new PrintWriter(smallFile);
-			
-			while ((oldLine = largeBufferedReader.readLine()) != null)
-			{
-				newLine = convert(oldLine);
-				smallPrintWriter.println(newLine);
-			}
-			
-			smallPrintWriter.flush();
-		}
-		catch (IOException i)
-		{
-			//Most likely IOException is the director does not exists, this avoids a wasted grunch of IF statements
-			File mkDirFile = new File(smallDirName);
-			mkDirFile.mkdirs();
-			
-			if (mkDirFile.isDirectory())
-			{
-				//Close bufferedreader to avoid conflicts on the file (unlikely, but....)
-				largeBufferedReader.close();
-				writeSmallSVMFile(largeFile);
-			}
-			else
-			{
-				//Okay, directory was not the issue, throw the IOException now.
-				throw new IOException();
-			}
-		}
-
+		writeSmallSVMFile(largeFile, smallFile);
 	}
+	
 	/**
 	 * This is the 2nd level entry point to transform a libSVM sparse format file comprised of minimum perfect hash values
 	 * that range too large for libSVM or libLinear to handle into a libSVM sparse format file comprised of sequentially 
@@ -465,11 +473,11 @@ public class SVMToSmallSVM
 	 * @throws FileNotFoundException If the largeSVMFile is not found, then throw exception
 	 * @throws IOException If an IO error other than FileNotFound is encountered, throw exception.  This is most likely a permissions or directory issue.
 	 */
-	public void processLargeSVMFile(File largeSVMFile, String smallFileName) throws FileNotFoundException, IOException
+	public void processLargeSVMFile(File largeSVMFile, File smallFile) throws FileNotFoundException, IOException
 	{
 		if (largeSVMFile.isFile())
 		{
-			writeSmallSVMFile(largeSVMFile, smallFileName);
+			writeSmallSVMFile(largeSVMFile, smallFile);
 		}
 		//else ignore the directory just found and return...
 
