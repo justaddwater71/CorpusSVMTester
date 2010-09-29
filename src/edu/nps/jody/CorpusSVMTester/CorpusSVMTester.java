@@ -19,7 +19,7 @@ import edu.nps.jody.MergeAndAnalyze.MergeAndAnalyze;
 public class CorpusSVMTester 
 {
 	//Data Members
-	public static final String PATH_DELIM = System.getProperty("path.separator");
+	public static final String FILE_DELIM = System.getProperty("file.separator");
 	
 	//Constructors
 	
@@ -31,11 +31,11 @@ public class CorpusSVMTester
 		
 		//textToSVM.processFiles(parentDirectory, maxGap, featureType);
 		
-		File largeSVMDirectory = new File(parentDirectory, TextToSVM.SVM_DIR_NAME);
+		//File largeSVMDirectory = new File(parentDirectory, TextToSVM.SVM_DIR_NAME);
 		
-		SVMToSmallSVM svmToSmallSVM = new SVMToSmallSVM();
+		//SVMToSmallSVM svmToSmallSVM = new SVMToSmallSVM();
 		
-		svmToSmallSVM.processLargeSVMDirectory(largeSVMDirectory);
+		//svmToSmallSVM.processLargeSVMDirectory(largeSVMDirectory);
 		
 		File smallSVMDirectory = new File(parentDirectory, SVMToSmallSVM.SMALL_SVM_DIR_NAME);
 		
@@ -45,8 +45,8 @@ public class CorpusSVMTester
 			for (int i = 0; i < groupSizes.length; i++)
 			{
 				//REMINDER !!!!!!This is NOT the way we'd chain this for a qsub job!!!!!
-				GroupAndSlice.groupAndSlicePrep(smallSVMDirectory, groupType, groupSizes[i], titleDigits, nCrossValidation);
-				sliceDirectory = new File(smallSVMDirectory, groupType + PATH_DELIM + nCrossValidation);
+				//GroupAndSlice.groupAndSlicePrep(smallSVMDirectory, groupType, groupSizes[i], titleDigits, nCrossValidation);
+				sliceDirectory = new File(smallSVMDirectory, groupType.dirName() + FILE_DELIM + groupSizes[i] + FILE_DELIM + nCrossValidation);
 				LibLinearManager.dummyPredictDirectory(sliceDirectory);//This directory is not correct
 				MergeAndAnalyze.makeMergeAndAnalysisFiles(sliceDirectory);//This directory is not correct
 			}

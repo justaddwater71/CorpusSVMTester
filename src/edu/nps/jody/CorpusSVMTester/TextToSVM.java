@@ -47,7 +47,7 @@ public class TextToSVM
 	public static final int GAPPY_BIGRAM_TAGGED 				= FeatureMaker.GAPPY_BIGRAM_TAGGED;
 	public static final int ORTHOGONAL_SPARSE_BIGRAM 	= FeatureMaker.ORTHOGONAL_SPARSE_BIGRAM;*/
 	
-	public static final String 	PATH_DELIM 						= System.getProperty("path.separator");
+	public static final String 	FILE_DELIM 						= System.getProperty("file.separator");
 	public static final String PAIR_DELIM							= ":";
 	public static final String CMPH_DIR_NAME				= "cmph";
 	public static final String KEY_FILE_NAME					= "keys.mph";

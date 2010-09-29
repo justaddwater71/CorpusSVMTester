@@ -44,7 +44,7 @@ import java.util.TreeSet;
 public class SVMToSmallSVM 
 {
 	//Data Members
-	public static final String 						PATH_DELIM 						= System.getProperty("path.separator");
+	public static final String 						FILE_DELIM 						= System.getProperty("file.separator");
 	public static final String						PAIRS_DELIM						=" ";//TODO make this selectable in the constructur, but still final
 	public static final char						FEATURE_COUNT_DELIM = ':';//TODO make this selectable in the constructor, but still final
 	public static final String 						SMALL_SVM_DIR_NAME 	= "smallSVMFiles";
@@ -373,9 +373,8 @@ public class SVMToSmallSVM
 	 * @param smallDirName path and filename to directory where small SVM files will be written
 	 * @throws IOException if directory existence is not the issue with writing or reading a file, then IOException is thrown
 	 */
-	public void writeSmallSVMFile(File largeFile,  File smallDir) throws IOException
+	public void writeSmallSVMFile(File largeFile,  File smallFile) throws IOException
 	{
-		File smallFile = new File(smallDir, largeFile.getName());
 		BufferedReader largeBufferedReader = null;
 		PrintWriter smallPrintWriter;
 		
@@ -390,7 +389,7 @@ public class SVMToSmallSVM
 		}
 		catch (IOException i)
 		{
-			smallDir.mkdirs();
+			smallFile.getParentFile().mkdirs();
 			smallFile.createNewFile();
 		}
 		
@@ -418,9 +417,9 @@ public class SVMToSmallSVM
 	 */
 	public void writeSmallSVMFile(File largeFile) throws IOException
 	{
-		String parentDirectory = largeFile.getParentFile().getParent();
+		File parentDirectory = largeFile.getParentFile().getParentFile();
 		
-		File smallFile = new File(parentDirectory,  SMALL_SVM_DIR_NAME + PATH_DELIM + largeFile.getName());
+		File smallFile = new File(parentDirectory,  SMALL_SVM_DIR_NAME + FILE_DELIM + largeFile.getName());
 		
 		writeSmallSVMFile(largeFile, smallFile);
 	}
