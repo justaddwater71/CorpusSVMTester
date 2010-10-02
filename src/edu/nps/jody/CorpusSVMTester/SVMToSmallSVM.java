@@ -243,6 +243,7 @@ public class SVMToSmallSVM
 	public void processLargeSVMDirectory(File directory, File smallDir) throws FileNotFoundException, IOException
 	{
 		File[] fileArray;
+		File smallSVMFile;
 		
 		if (directory.isDirectory())
 		{
@@ -256,7 +257,8 @@ public class SVMToSmallSVM
 		
 		for (int i=0; i < fileArray.length; i++)
 		{
-			processLargeSVMFile(fileArray[i], smallDir);
+			smallSVMFile = new File(smallDir, fileArray[i].getName());
+			processLargeSVMFile(fileArray[i], smallSVMFile);
 		}
 	}
 	

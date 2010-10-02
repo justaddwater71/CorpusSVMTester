@@ -53,7 +53,7 @@ public class TextToSVM
 	public static final String KEY_FILE_NAME					= "keys.mph";
 	public static final String SIGNATURE_FILE_NAME	= "signature";
 	public static final String SVM_DIR_NAME					= "svmFiles";
-	private static final String TEXT_DIR_NAME 				= "text";
+	public static final String TEXT_DIR_NAME 				= "text";
 	private						int		maxMapValue;
 	
 	//Constructors
@@ -277,14 +277,14 @@ public class TextToSVM
 		
 		printWriter.print("\n");
 	}
-	
-	/**
+	/*
+	*//**
 	 * Turns all files in a given directory or a single file into a corresponding libSVM SPARSE formatted file madu up of hash value for tokens
 	 * and counts of the occurrences of each token within a string.  This method does NOT recurse the text directory.  Any encountered
 	 * subdirectories will be ignored.  This function requires that if a directory is given, then a sibling directory named "cmph" exists or
 	 * if a file is given, then a sibling to that files parent directory exists name "cmph".  The "cmph" directory contains a file named "keys.mph"
 	 * and a file named "signature" that are used to build a MembershipChecker for this processing.
-	 */
+	 *//*
 	public void processFiles(File parentDirectory, int maxGap,  FeatureTypes featureType) throws FileNotFoundException, IOException
 	{
 		File textDir				= new File(parentDirectory.getParentFile(), TEXT_DIR_NAME);
@@ -294,7 +294,7 @@ public class TextToSVM
 		File svmDir				= new File(parentDirectory,	SVM_DIR_NAME);
 		
 		processFiles(textDir, maxGap, featureType, keyFile.getAbsolutePath(), signatureFile.getAbsolutePath(), svmDir);
-	}
+	}*/
 		
 	
 	/**

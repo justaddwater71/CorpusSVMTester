@@ -626,26 +626,26 @@ class Yylex {
 
       switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
         case 2: 
-          System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
-          System.out.println("action [27] { return NEXTWORD; }");
+          //System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
+          //System.out.println("action [27] { return NEXTWORD; }");
           { return NEXTWORD;
           }
         case 5: break;
         case 1: 
-          System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
-          System.out.println("action [2147483647] { System.out.print(yytext()); }");
+          //System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
+          //System.out.println("action [2147483647] { System.out.print(yytext()); }");
           { System.out.print(yytext());
           }
         case 6: break;
         case 4: 
-          System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
-          System.out.println("action [26] { return NEWPOST; }");
+          //System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
+          //System.out.println("action [26] { return NEWPOST; }");
           { return NEWPOST;
           }
         case 7: break;
         case 3: 
-          System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
-          System.out.println("action [78] {  }");
+          //System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
+          //System.out.println("action [78] {  }");
           { 
           }
         case 8: break;
