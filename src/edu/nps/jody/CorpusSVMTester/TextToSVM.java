@@ -38,15 +38,6 @@ import edu.nps.jody.HashFinder.MembershipChecker;
 public class TextToSVM 
 {
 	//Data Members
-/*	public static final int ONE_GRAM										= FeatureMaker.ONE_GRAM;
-	public static final int TWO_GRAM										= FeatureMaker.TWO_GRAM;
-	public static final int THREE_GRAM									= FeatureMaker.THREE_GRAM;
-	public static final int FOUR_GRAM									= FeatureMaker.FOUR_GRAM;
-	public static final int FIVE_GRAM										= FeatureMaker.FIVE_GRAM;
-	public static final int GAPPY_BIGRAM								= FeatureMaker.GAPPY_BIGRAM;
-	public static final int GAPPY_BIGRAM_TAGGED 				= FeatureMaker.GAPPY_BIGRAM_TAGGED;
-	public static final int ORTHOGONAL_SPARSE_BIGRAM 	= FeatureMaker.ORTHOGONAL_SPARSE_BIGRAM;*/
-	
 	public static final String 	FILE_DELIM 						= System.getProperty("file.separator");
 	public static final String PAIR_DELIM							= ":";
 	public static final String CMPH_DIR_NAME				= "cmph";
@@ -61,14 +52,14 @@ public class TextToSVM
 	 * Sole constructor for TextToSVM.  Sets maxMapValue = 0. If this class goes back to 
 	 * being all static methods, then this constructor will be empty. 
 	 */
-	TextToSVM()
+	public TextToSVM()
 	{
 		maxMapValue = 0;
 	}
 	
 	//Methods
 	/**
-	 * Find the maximum Integer value within nameToIntegerMap
+	 * Find the maximum Integer value within nameToIntegerMap. Never let maxMap = 0, it causes LibSVM to error out.
 	 * 
 	 * @param nameToIntegerMap - the set of strings and their counts/ids
 	 * @return the highest value Integer in the value portion of nameToIntegerMap
@@ -77,7 +68,7 @@ public class TextToSVM
 	{
 		if (nameToIntegerMap.isEmpty())
 		{
-			return 0;
+			return 1;
 		}
 		else
 		{
@@ -257,25 +248,31 @@ public class TextToSVM
 		Integer key;
 		Integer value;
 		
-		printWriter.print(id + " ");
-		
-		while (iterator.hasNext())
+		//Added if statement to eliminate empty utterances, only write CHDMap if it is NOT empty
+		if (!chdMap.isEmpty())
 		{
-			key = iterator.next();
+			printWriter.print(id + " ");
 			
-			value = chdMap.get(key);
-			
-			if (value == null)
+			while (iterator.hasNext())
 			{
-				System.out.println("For key " + key + " in file " + id);
-				System.out.println("NULL in VALUE!!! HALT!!!");
-				return;
+				key = iterator.next();
+				
+				value = chdMap.get(key);
+				
+				if (value == null)
+				{
+					System.out.println("For key " + key + " in file " + id);
+					System.out.println("NULL in VALUE!!! HALT!!!");
+					return;
+				}
+				
+				printWriter.print(key.toString() + ":" + value.toString() + " ");
 			}
 			
-			printWriter.print(key.toString() + ":" + value.toString() + " ");
+			printWriter.print("\n");
 		}
 		
-		printWriter.print("\n");
+
 	}
 	/*
 	*//**
@@ -381,6 +378,7 @@ public class TextToSVM
 						chdMap = turnInstanceIntoCHDMap(instanceVector, membershipChecker);
 						writeCHDMapToSVMFile(chdMap, printWriter, id);
 						printWriter.flush();
+						//printWriter.close();
 					}
 				}
 				

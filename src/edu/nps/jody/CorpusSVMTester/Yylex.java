@@ -634,7 +634,7 @@ class Yylex {
         case 1: 
           //System.out.println("line: "+(yyline+1)+" "+"match: --"+yytext()+"--");
           //System.out.println("action [2147483647] { System.out.print(yytext()); }");
-          { System.out.print(yytext());
+          { //System.out.print(yytext());
           }
         case 6: break;
         case 4: 

@@ -29,7 +29,7 @@ public class CorpusSVMTester
 	{
 		//FIXME get all the dir_name constants coming out of one file to eliminate matching issues after the basic process is proven out
 		//Feature type is not its own directory because the model must match the feature, so this is a human being task to match model to feature creation
-		TextToSVM textToSVM = new TextToSVM();
+		TextToSVM textToSVM 		= new TextToSVM();
 		
 		File textDirectory 				= new File(corpusDirectory, TextToSVM.TEXT_DIR_NAME);
 		
@@ -53,7 +53,7 @@ public class CorpusSVMTester
 		
 		File smallSVMDirectory = new File(modelDirectory, SVMToSmallSVM.SMALL_SVM_DIR_NAME);
 		
-		File sliceDirectory;
+		//File sliceDirectory;
 		
 		for (GroupTypes groupType:GroupTypes.values())
 			for (int i = 0; i < groupSizes.length; i++)
@@ -65,8 +65,6 @@ public class CorpusSVMTester
 				//MergeAndAnalyze.makeMergeAndAnalysisFiles(sliceDirectory);
 			}
 	}
-	
-
 	
 	/**
 	 * --parent
@@ -87,7 +85,7 @@ public class CorpusSVMTester
 		File 						corpusDirectory	= new File(System.getProperty("user.dir"));
 		int 						maxGap					= 3;
 		FeatureTypes 	featureType			= FeatureTypes.ORTHOGONAL_SPARSE_BIGRAM;
-		int[] 					groupSizes			= {5, 10, 20, 40, 75, 150};
+		int[] 					groupSizes			= {5, 10, 25, 50, 75, 150};
 		int 						titleDigits				= 3;
 		int 						nCrossValidation = 5;
 		int						modelNumber		= 0;
@@ -140,8 +138,12 @@ public class CorpusSVMTester
 				nCrossValidation = Integer.parseInt(args[i+1]);
 				i++;
 			}
+			else if(args[i].equalsIgnoreCase("--modelNumber"))
+			{
+				modelNumber = Integer.parseInt(args[i+1]);
+				i++;
+			}
 		}
-		//prepareTextForSVM(parentDirectory, maxGap, featureType, groupSizes, titleDigits, nCrossValidation);
 		prepareTextForSVM(corpusDirectory, maxGap, featureType, modelNumber, groupSizes, titleDigits, nCrossValidation);
 	}
 

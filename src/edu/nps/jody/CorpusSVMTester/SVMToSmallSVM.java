@@ -15,10 +15,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,7 +52,8 @@ public class SVMToSmallSVM
 	public static final char						FEATURE_COUNT_DELIM = ':';//TODO make this selectable in the constructor, but still final
 	public static final String 						SMALL_SVM_DIR_NAME 	= "smallSVMFiles";
 	private HashMap<Integer, Integer> largeToSmallHashMap;
-	private int 												mapMax;
+	private int 												mapMax = 1;
+	public File													largeToSmallHashMapFile	= null;
 	
 	//FIXME maybe making a blank hashmap when a file is expected is not a good idea as a fallback plan
 	//Constructors
@@ -62,21 +66,23 @@ public class SVMToSmallSVM
 	 * @throws IOException
 	 * @throws ClassNotFoundException
 	 */
-	SVMToSmallSVM(String hashMapFileName) throws IOException, ClassNotFoundException
+	public SVMToSmallSVM(String hashMapFileName) throws IOException, ClassNotFoundException
 	{
 		initlializeLargeToSmallHashMap(hashMapFileName);
 	}
 	
-	SVMToSmallSVM(File hashMapFile) throws IOException, ClassNotFoundException
+	public SVMToSmallSVM(File hashMapFile) throws IOException, ClassNotFoundException
 	{
+		largeToSmallHashMapFile = hashMapFile;
 		initlializeLargeToSmallHashMap(hashMapFile);
 	}
 	
 	/**
 	 * Constructor used when no save object file containing a HashMap is expected.
 	 */
-	SVMToSmallSVM()
+	public SVMToSmallSVM()
 	{
+		largeToSmallHashMapFile = new File("largeToSmallHashMapFile");
 		largeToSmallHashMap = new HashMap<Integer, Integer>();
 	}
 	
@@ -97,7 +103,7 @@ public class SVMToSmallSVM
 	
 	public void initlializeLargeToSmallHashMap(String filename) throws IOException, ClassNotFoundException
 	{
-		File largeToSmallHashMapFile = new File(filename);
+		largeToSmallHashMapFile = new File(filename);
 		
 		 initlializeLargeToSmallHashMap(largeToSmallHashMapFile);
 	}
@@ -130,6 +136,12 @@ public class SVMToSmallSVM
 			//Find maximum value in the values set of the hash map
 			Set<Integer> mapSet = new TreeSet<Integer>(largeToSmallHashMap.keySet());
 			mapMax = Collections.max(mapSet);
+			
+			//Ensure that mapMax is never 0;
+			if (mapMax < 1)
+			{
+				mapMax = 1;
+			}
 		}
 		catch (FileNotFoundException f)
 		{
@@ -260,6 +272,8 @@ public class SVMToSmallSVM
 			smallSVMFile = new File(smallDir, fileArray[i].getName());
 			processLargeSVMFile(fileArray[i], smallSVMFile);
 		}
+		
+		writeHashMap(largeToSmallHashMapFile, largeToSmallHashMap);
 	}
 	
 	/**
@@ -484,4 +498,13 @@ public class SVMToSmallSVM
 
 	}
 	
+	public static void writeHashMap(File file, HashMap<Integer, Integer> hashMap) throws IOException
+	{
+		OutputStream outputStream = new FileOutputStream(file);
+		ObjectOutputStream objectOutputStream = new ObjectOutputStream(outputStream);
+		
+		objectOutputStream.writeObject(hashMap);
+		
+		objectOutputStream.flush();
+	}
 }
